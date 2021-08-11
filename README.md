@@ -1,2 +1,2 @@
 # Physics
-  Physical simulations by Python
+  Physical simulations
