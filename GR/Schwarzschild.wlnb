@@ -1,0 +1,305 @@
+{
+ "cells": [
+  {
+   "kind": 2,
+   "value": "x = {t,r,\\[Theta], \\[CurlyPhi]}\r\ng = DiagonalMatrix[{-(1-(2M)/r), (1-2M/r)^(-1), r^2, r^2 * (Sin[\\[Theta]])^2}];\r\nPrint[\"The Schwarzschild metric is\"];\r\ng // MatrixForm",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow><w></w><wb>{</wb><wrow><w></w><w>t</w><w>,</w><w>r</w><w>,</w><w>θ</w><w>,</w><w>φ</w></wrow><wb>}</wb></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "{t, r, θ, φ}",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "71dc157f-670c-4045-ba1a-6a2b7efc8d01",
+     "metadata": {
+      "cellLabel": "Out[3]= ",
+      "isBoxData": false
+     }
+    },
+    {
+     "items": [
+      {
+       "data": "<pre>The Schwarzschild metric is\n</pre>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "\"The Schwarzschild metric is\\n\"",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "a5459c24-9918-4b6d-a23a-aba2c0821bf0",
+     "metadata": {
+      "cellLabel": "",
+      "isBoxData": false
+     }
+    },
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><wrow><w></w><wrow><w></w><w>-</w><w>1</w></wrow><w>+</w><wfrac><w><wrow><w></w><w>2</w><w></w><w>M</w></wrow></w><w><w></w><w><w>r</w></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>1</w></w><w><w></w><w><wrow><w></w><w>1</w><w>-</w><wfrac class=\"script\"><w><wrow><w></w><w>2</w><w></w><w>M</w></wrow></w><w><w></w><w><w>r</w></w></w></wfrac></wrow></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wsup><w></w><w>r</w><w><w>2</w></w></wsup></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><wsup><w></w><w>r</w><w><w>2</w></w></wsup><w></w><wsup><w></w><wrow><w></w><w>Sin</w><wrow><w></w><wb>[</wb><w>θ</w><wb>]</wb></wrow></wrow><w><w>2</w></w></wsup></wrow></w></wgrid><w>⁠</w><wb>)</wb></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "MatrixForm[{{-1 + (2*M)/r, 0, 0, 0}, {0, (1 - (2*M)/r)^(-1), 0, 0}, {0, 0, r^2, 0}, {0, 0, 0, r^2*Sin[θ]^2}}]",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "dbff670b-12fc-4c12-a285-03e25212ba5f",
+     "metadata": {
+      "cellLabel": "Out[6]//MatrixForm= ",
+      "isBoxData": false
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1661511055331,
+     "endTime": 1661511055854
+    },
+    "executionOrder": 3,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "ig = Inverse[g];\r\ngd = D[g, {x}];\r\n\r\nPrint[\"The inverse metric is\"];\r\nig // Simplify // MatrixForm",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<pre>The inverse metric is\n</pre>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "\"The inverse metric is\\n\"",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "5e510d66-8a77-4b4a-b552-3a53920c0d88",
+     "metadata": {
+      "cellLabel": "",
+      "isBoxData": false
+     }
+    },
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><wfrac><w><w>r</w></w><w><w></w><w><wrow><w></w><wrow><w></w><w>2</w><w></w><w>M</w></wrow><w>-</w><w>r</w></wrow></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><w>1</w><w>-</w><wfrac><w><wrow><w></w><w>2</w><w></w><w>M</w></wrow></w><w><w></w><w><w>r</w></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>1</w></w><w><w></w><w><wsup><w></w><w>r</w><w><w>2</w></w></wsup></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><wsup><w></w><wrow><w></w><w>Csc</w><wrow><w></w><wb>[</wb><w>θ</w><wb>]</wb></wrow></wrow><w><w>2</w></w></wsup></w><w><w></w><w><wsup><w></w><w>r</w><w><w>2</w></w></wsup></w></w></wfrac></w></wgrid><w>⁠</w><wb>)</wb></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "MatrixForm[{{r/(2*M - r), 0, 0, 0}, {0, 1 - (2*M)/r, 0, 0}, {0, 0, r^(-2), 0}, {0, 0, 0, Csc[θ]^2/r^2}}]",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "98b76bc8-9881-4d37-afd6-8ffa987a0a46",
+     "metadata": {
+      "cellLabel": "Out[10]//MatrixForm= ",
+      "isBoxData": false
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1661511055855,
+     "endTime": 1661511056637
+    },
+    "executionOrder": 7,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "ChristoffelSymbol[g_, xx_] := Block[\r\n   {ig, gd},\r\n   ig = Inverse[g];\r\n   gd = D[g, {xx}];\r\n   ig.(gd + Transpose[gd, {3, 1, 2}] - Transpose[gd, {2, 3, 1}])/2\r\n   ];\r\nPrint[\"The ChristoffelSymbol is\"];\r\nChristoffelSymbol[g,x] // Simplify // MatrixForm",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<pre>The ChristoffelSymbol is\n</pre>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "\"The ChristoffelSymbol is\\n\"",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "e104af68-d7ca-4acf-bf77-97d82fa60c7d",
+     "metadata": {
+      "cellLabel": "",
+      "isBoxData": false
+     }
+    },
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><w>0</w></w><w><wrow><w></w><w>-</w><wfrac><w><w>M</w></w><w><w></w><w><wrow><w></w><wrow><w></w><w>2</w><w></w><w>M</w><w></w><w>r</w></wrow><w>-</w><wsup><w></w><w>r</w><w><w>2</w></w></wsup></wrow></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><wrow><w></w><w>-</w><wfrac><w><w>M</w></w><w><w></w><w><wrow><w></w><wrow><w></w><w>2</w><w></w><w>M</w><w></w><w>r</w></wrow><w>-</w><wsup><w></w><w>r</w><w><w>2</w></w></wsup></wrow></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><wfrac><w><wrow><w></w><w>M</w><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wrow><w></w><wrow><w></w><w>-</w><w>2</w></wrow><w></w><w>M</w></wrow><w>+</w><w>r</w></wrow><wb>)</wb></wrow></wrow></w><w><w></w><w><wsup><w></w><w>r</w><w><w>3</w></w></wsup></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><w>0</w></w><w><wfrac><w><w>M</w></w><w><w></w><w><wrow><w></w><wrow><w></w><w>2</w><w></w><w>M</w><w></w><w>r</w></wrow><w>-</w><wsup><w></w><w>r</w><w><w>2</w></w></wsup></wrow></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><wrow><w></w><w>2</w><w></w><w>M</w></wrow><w>-</w><w>r</w></wrow></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wrow><w></w><w>2</w><w></w><w>M</w></wrow><w>-</w><w>r</w></wrow><wb>)</wb></wrow><w></w><wsup><w></w><wrow><w></w><w>Sin</w><wrow><w></w><wb>[</wb><w>θ</w><wb>]</wb></wrow></wrow><w><w>2</w></w></wsup></wrow></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>1</w></w><w><w></w><w><w>r</w></w></w></wfrac></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><w>0</w></w><w><wfrac><w><w>1</w></w><w><w></w><w><w>r</w></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><wrow><w></w><w>-</w><wrow><w></w><w>Cos</w><wrow><w></w><wb>[</wb><w>θ</w><wb>]</wb></wrow></wrow></wrow><w></w><wrow><w></w><w>Sin</w><wrow><w></w><wb>[</wb><w>θ</w><wb>]</wb></wrow></wrow></wrow></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>1</w></w><w><w></w><w><w>r</w></w></w></wfrac></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><w>Cot</w><wrow><w></w><wb>[</wb><w>θ</w><wb>]</wb></wrow></wrow></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(1,max-content);\"><w><w>0</w></w><w><wfrac><w><w>1</w></w><w><w></w><w><w>r</w></w></w></wfrac></w><w><wrow><w></w><w>Cot</w><wrow><w></w><wb>[</wb><w>θ</w><wb>]</wb></wrow></wrow></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w></wgrid><w>⁠</w><wb>)</wb></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "MatrixForm[{{{0, -(M/(2*M*r - r^2)), 0, 0}, {-(M/(2*M*r - r^2)), 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}, {{(M*(-2*M + r))/r^3, 0, 0, 0}, {0, M/(2*M*r - r^2), 0, 0}, {0, 0, 2*M - r, 0}, {0, 0, 0, (2*M - r)*Sin[θ]^2}}, {{0, 0, 0, 0}, {0, 0, r^(-1), 0}, {0, r^(-1), 0, 0}, {0, 0, 0, -(Cos[θ]*Sin[θ])}}, {{0, 0, 0, 0}, {0, 0, 0, r^(-1)}, {0, 0, 0, Cot[θ]}, {0, r^(-1), Cot[θ], 0}}}]",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "f73aefd6-a37a-4b93-946e-b41489729423",
+     "metadata": {
+      "cellLabel": "Out[13]//MatrixForm= ",
+      "isBoxData": false
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1661511056637,
+     "endTime": 1661511057073
+    },
+    "executionOrder": 11,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "RiemannTensor[g_, xx_] := Block[\r\n   {ig, chr, chrd, chrdif},\r\n   chr = ChristoffelSymbol[g, xx];\r\n   chrd = D[chr, {xx}];\r\n   chrdif = chrd - chr.chr;\r\n   Transpose[chrdif, {4, 1, 3, 2}] - Transpose[chrdif, {4, 2, 3, 1}]\r\n   ];\r\nPrint[\"The Riemann tensor is\"];\r\nRiemannTensor[g,x] // Simplify // MatrixForm",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<pre>The Riemann tensor is\n</pre>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "\"The Riemann tensor is\\n\"",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "385f011e-3223-478e-ba76-cece126d967d",
+     "metadata": {
+      "cellLabel": "",
+      "isBoxData": false
+     }
+    },
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><wfrac><w><wrow><w></w><w>2</w><w></w><w>M</w><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wrow><w></w><w>2</w><w></w><w>M</w></wrow><w>-</w><w>r</w></wrow><wb>)</wb></wrow></wrow></w><w><w></w><w><wsup><w></w><w>r</w><w><w>4</w></w></wsup></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><wrow><w></w><w>2</w><w></w><w>M</w></wrow></w><w><w></w><w><wrow><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wrow><w></w><w>2</w><w></w><w>M</w></wrow><w>-</w><w>r</w></wrow><wb>)</wb></wrow><w></w><wsup><w></w><w>r</w><w><w>2</w></w></wsup></wrow></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><wrow><w></w><w>M</w><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wrow><w></w><wrow><w></w><w>-</w><w>2</w></wrow><w></w><w>M</w></wrow><w>+</w><w>r</w></wrow><wb>)</wb></wrow></wrow></w><w><w></w><w><wsup><w></w><w>r</w><w><w>4</w></w></wsup></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>M</w></w><w><w></w><w><w>r</w></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><wrow><w></w><w>M</w><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wrow><w></w><wrow><w></w><w>-</w><w>2</w></wrow><w></w><w>M</w></wrow><w>+</w><w>r</w></wrow><wb>)</wb></wrow></wrow></w><w><w></w><w><wsup><w></w><w>r</w><w><w>4</w></w></wsup></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><wrow><w></w><w>M</w><w></w><wsup><w></w><wrow><w></w><w>Sin</w><wrow><w></w><wb>[</wb><w>θ</w><wb>]</wb></wrow></wrow><w><w>2</w></w></wsup></wrow></w><w><w></w><w><w>r</w></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><wfrac><w><wrow><w></w><w>2</w><w></w><w>M</w><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wrow><w></w><wrow><w></w><w>-</w><w>2</w></wrow><w></w><w>M</w></wrow><w>+</w><w>r</w></wrow><wb>)</wb></wrow></wrow></w><w><w></w><w><wsup><w></w><w>r</w><w><w>4</w></w></wsup></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><w>-</w><wfrac><w><wrow><w></w><w>2</w><w></w><w>M</w></wrow></w><w><w></w><w><wrow><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wrow><w></w><w>2</w><w></w><w>M</w></wrow><w>-</w><w>r</w></wrow><wb>)</wb></wrow><w></w><wsup><w></w><w>r</w><w><w>2</w></w></wsup></wrow></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>M</w></w><w><w></w><w><wrow><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wrow><w></w><w>2</w><w></w><w>M</w></wrow><w>-</w><w>r</w></wrow><wb>)</wb></wrow><w></w><wsup><w></w><w>r</w><w><w>2</w></w></wsup></wrow></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>M</w></w><w><w></w><w><w>r</w></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>M</w></w><w><w></w><w><wrow><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wrow><w></w><w>2</w><w></w><w>M</w></wrow><w>-</w><w>r</w></wrow><wb>)</wb></wrow><w></w><wsup><w></w><w>r</w><w><w>2</w></w></wsup></wrow></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><wrow><w></w><w>M</w><w></w><wsup><w></w><wrow><w></w><w>Sin</w><wrow><w></w><wb>[</wb><w>θ</w><wb>]</wb></wrow></wrow><w><w>2</w></w></wsup></wrow></w><w><w></w><w><w>r</w></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><wrow><w></w><w>M</w><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wrow><w></w><w>2</w><w></w><w>M</w></wrow><w>-</w><w>r</w></wrow><wb>)</wb></wrow></wrow></w><w><w></w><w><wsup><w></w><w>r</w><w><w>4</w></w></wsup></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><w>-</w><wfrac><w><w>M</w></w><w><w></w><w><w>r</w></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>M</w></w><w><w></w><w><wrow><w></w><wsup><w></w><w>r</w><w><w>2</w></w></wsup><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wrow><w></w><wrow><w></w><w>-</w><w>2</w></wrow><w></w><w>M</w></wrow><w>+</w><w>r</w></wrow><wb>)</wb></wrow></wrow></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><w>-</w><wfrac><w><w>M</w></w><w><w></w><w><w>r</w></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><wrow><w></w><w>2</w><w></w><w>M</w></wrow></w><w><w></w><w><w>r</w></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><w>-</w><wfrac><w><wrow><w></w><w>2</w><w></w><w>M</w><w></w><wsup><w></w><wrow><w></w><w>Sin</w><wrow><w></w><wb>[</wb><w>θ</w><wb>]</wb></wrow></wrow><w><w>2</w></w></wsup></wrow></w><w><w></w><w><w>r</w></w></w></wfrac></wrow></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><wrow><w></w><w>M</w><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wrow><w></w><w>2</w><w></w><w>M</w></wrow><w>-</w><w>r</w></wrow><wb>)</wb></wrow></wrow></w><w><w></w><w><wsup><w></w><w>r</w><w><w>4</w></w></wsup></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><w>-</w><wfrac><w><wrow><w></w><w>M</w><w></w><wsup><w></w><wrow><w></w><w>Sin</w><wrow><w></w><wb>[</wb><w>θ</w><wb>]</wb></wrow></wrow><w><w>2</w></w></wsup></wrow></w><w><w></w><w><w>r</w></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>M</w></w><w><w></w><w><wrow><w></w><wsup><w></w><w>r</w><w><w>2</w></w></wsup><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wrow><w></w><wrow><w></w><w>-</w><w>2</w></wrow><w></w><w>M</w></wrow><w>+</w><w>r</w></wrow><wb>)</wb></wrow></wrow></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><w>-</w><wfrac><w><wrow><w></w><w>M</w><w></w><wsup><w></w><wrow><w></w><w>Sin</w><wrow><w></w><wb>[</wb><w>θ</w><wb>]</wb></wrow></wrow><w><w>2</w></w></wsup></wrow></w><w><w></w><w><w>r</w></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><w>-</w><wfrac><w><wrow><w></w><w>2</w><w></w><w>M</w></wrow></w><w><w></w><w><w>r</w></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><wrow><w></w><w>2</w><w></w><w>M</w><w></w><wsup><w></w><wrow><w></w><w>Sin</w><wrow><w></w><wb>[</wb><w>θ</w><wb>]</wb></wrow></wrow><w><w>2</w></w></wsup></wrow></w><w><w></w><w><w>r</w></w></w></wfrac></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w><w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></w></wgrid><w>⁠</w><wb>)</wb></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "MatrixForm[{{{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}, {{0, (2*M*(2*M - r))/r^4, 0, 0}, {(2*M)/((2*M - r)*r^2), 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}, {{0, 0, (M*(-2*M + r))/r^4, 0}, {0, 0, 0, 0}, {M/r, 0, 0, 0}, {0, 0, 0, 0}}, {{0, 0, 0, (M*(-2*M + r))/r^4}, {0, 0, 0, 0}, {0, 0, 0, 0}, {(M*Sin[θ]^2)/r, 0, 0, 0}}}, {{{0, (2*M*(-2*M + r))/r^4, 0, 0}, {(-2*M)/((2*M - r)*r^2), 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}, {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}, {{0, 0, 0, 0}, {0, 0, M/((2*M - r)*r^2), 0}, {0, M/r, 0, 0}, {0, 0, 0, 0}}, {{0, 0, 0, 0}, {0, 0, 0, M/((2*M - r)*r^2)}, {0, 0, 0, 0}, {0, (M*Sin[θ]^2)/r, 0, 0}}}, {{{0, 0, (M*(2*M - r))/r^4, 0}, {0, 0, 0, 0}, {-(M/r), 0, 0, 0}, {0, 0, 0, 0}}, {{0, 0, 0, 0}, {0, 0, M/(r^2*(-2*M + r)), 0}, {0, -(M/r), 0, 0}, {0, 0, 0, 0}}, {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}, {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, (2*M)/r}, {0, 0, (-2*M*Sin[θ]^2)/r, 0}}}, {{{0, 0, 0, (M*(2*M - r))/r^4}, {0, 0, 0, 0}, {0, 0, 0, 0}, {-((M*Sin[θ]^2)/r), 0, 0, 0}}, {{0, 0, 0, 0}, {0, 0, 0, M/(r^2*(-2*M + r))}, {0, 0, 0, 0}, {0, -((M*Sin[θ]^2)/r), 0, 0}}, {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, (-2*M)/r}, {0, 0, (2*M*Sin[θ]^2)/r, 0}}, {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}}}]",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "f4e562ad-0e05-49d6-9181-93186bfdf7f7",
+     "metadata": {
+      "cellLabel": "Out[16]//MatrixForm= ",
+      "isBoxData": false
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1661511057073,
+     "endTime": 1661511057558
+    },
+    "executionOrder": 14,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "RicciTensor[g_, xx_] := Block[{rie},\r\n   rie = RiemannTensor[g, xx];\r\n   Tr[Transpose[rie, {3, 2, 4, 1}], Plus, 2]\r\n   ];\r\nRicciScalar[g_, xx_] := Block[{ric},\r\n  ric = RicciTensor[g, xx];\r\n  ric.Inverse[g] // Tr\r\n  ]\r\n\r\nPrint[\"The Ricci tensor is\"];\r\nRicciTensor[g,x] // Simplify // MatrixForm\r\n\r\nPrint[\"The Ricci scalar is\"];\r\nRicciScalar[g,x] // Simplify\r\n",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<pre>The Ricci tensor is\n</pre>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "\"The Ricci tensor is\\n\"",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "6df8ec09-253e-480e-9389-aab4036c957b",
+     "metadata": {
+      "cellLabel": "",
+      "isBoxData": false
+     }
+    },
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(4,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "MatrixForm[{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}]",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "ee6dbdd2-ced7-459d-b634-1908428e7f1e",
+     "metadata": {
+      "cellLabel": "Out[20]//MatrixForm= ",
+      "isBoxData": false
+     }
+    },
+    {
+     "items": [
+      {
+       "data": "<pre>The Ricci scalar is\n</pre>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "\"The Ricci scalar is\\n\"",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "e86043ec-1f79-423b-933d-e79db9a4065e",
+     "metadata": {
+      "cellLabel": "",
+      "isBoxData": false
+     }
+    },
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><w>0</w></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "0",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "16feb09a-8c3a-4551-80ca-1563169c3b7b",
+     "metadata": {
+      "cellLabel": "Out[22]= ",
+      "isBoxData": false
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1661511057558,
+     "endTime": 1661511058255
+    },
+    "executionOrder": 17,
+    "success": true
+   }
+  }
+ ]
+}
