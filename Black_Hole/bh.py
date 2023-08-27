@@ -1,7 +1,6 @@
 import numpy as np
 import numba as nb
 from PIL import Image as Image
-
 import time
 
 c = 1.0
@@ -74,7 +73,7 @@ def render():
         image_pixels[j,i] = camera_ray_trace(x,y)
 
 bh_position = np.array([0, 0., 0.])
-c_origin = np.array([0., 9., -0.])
+c_origin = np.array([0., 0.5, -9])
 c_focus = np.array([0., 0., 0.])
 
 bh_mass = 80
@@ -82,8 +81,8 @@ bh_radius = 2*bh_mass*G/c**2
 print(bh_radius)
 
 
-pic_width = 100
-pic_height = 100
+pic_width = 1920
+pic_height = 1080
 
 disk_origin = c_focus
 disk_inner_r = 4.5*bh_radius
@@ -101,6 +100,6 @@ camera_up=normalize(np.cross(camera_normal,camera_right))
 
 render()
 
-Image.fromarray(image_pixels.astype(np.uint8)).save("images/blackholet.png")
+Image.fromarray(image_pixels.astype(np.uint8)).save("t.png")
 
 print("Done.")
