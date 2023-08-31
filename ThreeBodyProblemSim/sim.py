@@ -68,7 +68,7 @@ r3_sol=sol[:,6:9]
 
 fig=plt.figure()
 ax=fig.add_subplot(111,projection="3d")
-'''
+
 line1 = ax.plot([],[],[],color="red")[0]
 line2 = ax.plot([],[],[],color="blue")[0]
 line3 = ax.plot([],[],[],color="green")[0]
@@ -87,7 +87,7 @@ ax.set_title("Three Body Problem")
 
 # 动画初始化
 def init():
-    for i in update_objects[0:3]:
+    for i in update_objects:
         i.set_data([],[])
         i.set_3d_properties([])
     return update_objects
@@ -103,11 +103,11 @@ def update(frames):
     return update_objects
 
 anim = animation.FuncAnimation(fig,update,init_func=init,frames=500,interval=100)
-'''
+
 #anim.save('ThreeBodyProblem.mp4',writer='ffmpeg',dpi=300)
 #plt.show()
 
-#'''
+'''
 ax.plot(r1_sol[:,0],r1_sol[:,1],r1_sol[:,2],color="red")
 ax.plot(r2_sol[:,0],r2_sol[:,1],r2_sol[:,2],color="blue")
 ax.plot(r3_sol[:,0],r3_sol[:,1],r3_sol[:,2],color="green")
@@ -123,4 +123,4 @@ ax.set_title("Three Body Problem")
 ax.legend()
 
 plt.show()
-#'''
+'''
