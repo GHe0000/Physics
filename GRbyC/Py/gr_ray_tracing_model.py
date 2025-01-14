@@ -1,7 +1,7 @@
-from taichi_glsl import *
+# from taichi_glsl import *
+import taichi as ti
 
 PI = 3.14159265
-
 
 @ti.data_oriented
 class Ray:
@@ -24,8 +24,8 @@ class Ray:
 
         dudphi = -ti.cos(ti.acos(x.dot(direction))) / (ti.sin(ti.acos(x.dot(direction))) * origin.norm())
         accre_l = (A_on @ y.cross(ti.Vector([0, 1, 0]))).normalized()
-        accre_phi1 = atan(accre_l[2] / accre_l[0]) % (2 * PI)
-        accre_phi2 = (atan(accre_l[2] / accre_l[0]) + PI) % (2 * PI)
+        accre_phi1 = ti.atan2(accre_l[2] / accre_l[0], 1) % (2 * PI)
+        accre_phi2 = (ti.atan2(accre_l[2] / accre_l[0], 1) + PI) % (2 * PI)
         u = 1 / origin.norm()
 
         for i in range(10000):
@@ -41,7 +41,7 @@ class Ray:
             if (phi - accre_phi1) * (phi - dphi - accre_phi1) <= 0 or (phi - accre_phi2) * (phi - dphi - accre_phi2) <= 0:
                 # add the mapping to the accretion disk
                 if 2.5 < r < 5:
-                    color += ti.Vector([1/(exp((r-4.9)/0.03)+1), 2/(exp((r-5)/0.3)+1)-1, -(r+3)**3*(r-5)/432])
+                    color += ti.Vector([1/(ti.exp((r-4.9)/0.03)+1), 2/(ti.exp((r-5)/0.3)+1)-1, -(r+3)**3*(r-5)/432])
         return color
 
 
@@ -95,8 +95,8 @@ class Camera:
         self.cam_vertical[None] = 2 * half_height * v
 
     def rot_z(self, t):
-        self.lookfrom[None][0] = 9.0 * cos(t/100)
-        self.lookfrom[None][1] = 9.0 * sin(t/100)
+        self.lookfrom[None][0] = 9.0 * ti.cos(t/100)
+        self.lookfrom[None][1] = 9.0 * ti.sin(t/100)
         self.reset_after_move()
 
     @ti.func
