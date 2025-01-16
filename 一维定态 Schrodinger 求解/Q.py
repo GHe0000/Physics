@@ -22,12 +22,12 @@ v = 0.5 * x**2
 V = diags(v, 0)
 
 # 构造 Hermitian 矩阵
-D = np.ones(N)
-A = spdiags([1 * D, -2 * D, 1 * D], [-1, 0, 1], N, N)
-A = (-(hbar**2) / (2 * m)) * (1 / dx**2) * A
+A = np.ones(N)
+D = spdiags([1 * A, -2 * A, 1 * A], [-1, 0, 1], N, N)
+D = (-(hbar**2) / (2 * m)) * (1 / dx**2) * D
 
 # 总哈密顿量
-H = A + V
+H = D + V
 
 # 求特征值和特征向量
 Val, Vec = eigsh(H, k=En, which='SA')

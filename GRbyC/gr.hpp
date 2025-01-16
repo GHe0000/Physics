@@ -1,4 +1,3 @@
-#include <cmath>
 #include <eigen3/Eigen/Eigen>
 #include <eigen3/Eigen/src/Core/GlobalFunctions.h>
 #include <eigen3/Eigen/src/Core/Matrix.h>
