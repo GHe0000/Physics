@@ -51,6 +51,19 @@ Color Ray::getRayColor() {
 
 void Camera::setupCamera() {
     // TODO: 实现摄像机参数设置
+    this->lookFrom << 5.0, 1.0, 0.0;
+    this->lookAt << 2.0,0.0,-3.0;
+    this->viewUp << 0.0, 1.0, 0.0;
+    double theta = this->fov * (PI / 180.0);
+    double halfHeight = tan(theta / 2.0);
+    double halfWidth = this->aspectRatio * halfHeight;
+    this->camOrigin = this->lookFrom;
+    Eigen::Vector3d w = (this->lookFrom - this->lookAt).normalized();
+    Eigen::Vector3d u = (this->viewUp.cross(w)).normalized();
+    Eigen::Vector3d v = w.cross(u);
+    Eigen::Vector3d lowerLeft = this->camOrigin - halfWidth * u - halfHeight * v - w;
+    this->camHorizontal = 2 * halfWidth * u;
+    this->camVertical = 2 * halfHeight * v;
 }
 
 Ray Camera::genRay(int u, int v) {

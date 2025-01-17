@@ -74,8 +74,7 @@ class Camera:
         u = (self.vup[None].cross(w)).normalized()
         v = w.cross(u)
         self.cam_lower_left_corner[None] = ti.Vector([-half_width, -half_height, -1.0])
-        self.cam_lower_left_corner[
-            None] = self.cam_origin[None] - half_width * u - half_height * v - w
+        self.cam_lower_left_corner[None] = self.cam_origin[None] - half_width * u - half_height * v - w
         self.cam_horizontal[None] = 2 * half_width * u
         self.cam_vertical[None] = 2 * half_height * v
 
