@@ -31,13 +31,13 @@ class Camera {
         Eigen::Vector3d lookAt;
         Eigen::Vector3d viewUp;
         
-        Eigen::Vector3d camLowerLeft;
+        Eigen::Vector3d camUpperLeft;
         Eigen::Vector3d camHorizontal;
         Eigen::Vector3d camVertical;
         Eigen::Vector3d camOrigin;
         
         void setupCamera();
-        Ray genRay(int u, int v);
+        Ray genRay(double u, double v);
 };
 
 #endif

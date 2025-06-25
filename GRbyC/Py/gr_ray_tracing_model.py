@@ -24,8 +24,8 @@ class Ray:
 
         dudphi = -ti.cos(ti.acos(x.dot(direction))) / (ti.sin(ti.acos(x.dot(direction))) * origin.norm())
         accre_l = (A_on @ y.cross(ti.Vector([0, 1, 0]))).normalized()
-        accre_phi1 = ti.atan2(accre_l[2] / accre_l[0], 1) % (2 * PI)
-        accre_phi2 = (ti.atan2(accre_l[2] / accre_l[0], 1) + PI) % (2 * PI)
+        accre_phi1 = ti.atan2(accre_l[2] , accre_l[0]) % (2 * PI)
+        accre_phi2 = (ti.atan2(accre_l[2] , accre_l[0]) + PI) % (2 * PI)
         u = 1 / origin.norm()
 
         for i in range(10000):
@@ -38,10 +38,11 @@ class Ray:
                 break
             if r < 0.01:
                 break
-            if (phi - accre_phi1) * (phi - dphi - accre_phi1) <= 0 or (phi - accre_phi2) * (phi - dphi - accre_phi2) <= 0:
+            if (phi - accre_phi2) * (phi - dphi - accre_phi2) <= 0:
                 # add the mapping to the accretion disk
                 if 2.5 < r < 5:
                     color += ti.Vector([1/(ti.exp((r-4.9)/0.03)+1), 2/(ti.exp((r-5)/0.3)+1)-1, -(r+3)**3*(r-5)/432])
+                    break
         return color
 
 
@@ -63,8 +64,10 @@ class Camera:
 
     @ti.kernel
     def reset(self):
-        self.lookfrom[None] = [5.0, 1.0, 0.0]
-        self.lookat[None] = [2.0, 0.0, -3.0]
+        # self.lookfrom[None] = [5.0, 1.0, 0.0]
+        # self.lookat[None] = [2.0, 0.0, -3.0]
+        self.lookfrom[None] = [0.0, 1.0, 8.0]
+        self.lookat[None] = [0.0, 0.0, 0.0]
         self.vup[None] = [0.0, 1.0, 0.0]
         theta = self.fov * (PI / 180.0)
         half_height = ti.tan(theta / 2.0)
@@ -73,30 +76,30 @@ class Camera:
         w = (self.lookfrom[None] - self.lookat[None]).normalized()
         u = (self.vup[None].cross(w)).normalized()
         v = w.cross(u)
-        self.cam_lower_left_corner[None] = ti.Vector([-half_width, -half_height, -1.0])
+        #self.cam_lower_left_corner[None] = ti.Vector([-half_width, -half_height, -1.0])
         self.cam_lower_left_corner[None] = self.cam_origin[None] - half_width * u - half_height * v - w
         self.cam_horizontal[None] = 2 * half_width * u
         self.cam_vertical[None] = 2 * half_height * v
 
-    @ti.kernel
-    def reset_after_move(self):
-        self.cam_origin[None] = self.lookfrom[None]
-        w = (self.lookfrom[None] - self.lookat[None]).normalized()
-        u = (self.vup[None].cross(w)).normalized()
-        v = w.cross(u)
-        theta = self.fov * (PI / 180.0)
-        half_height = ti.tan(theta / 2.0)
-        half_width = self.aspect_ratio * half_height
-        self.cam_lower_left_corner[None] = ti.Vector([-half_width, -half_height, -1.0])
-        self.cam_lower_left_corner[
-            None] = self.cam_origin[None] - half_width * u - half_height * v - w
-        self.cam_horizontal[None] = 2 * half_width * u
-        self.cam_vertical[None] = 2 * half_height * v
-
-    def rot_z(self, t):
-        self.lookfrom[None][0] = 9.0 * ti.cos(t/100)
-        self.lookfrom[None][1] = 9.0 * ti.sin(t/100)
-        self.reset_after_move()
+    # @ti.kernel
+    # def reset_after_move(self):
+    #     self.cam_origin[None] = self.lookfrom[None]
+    #     w = (self.lookfrom[None] - self.lookat[None]).normalized()
+    #     u = (self.vup[None].cross(w)).normalized()
+    #     v = w.cross(u)
+    #     theta = self.fov * (PI / 180.0)
+    #     half_height = ti.tan(theta / 2.0)
+    #     half_width = self.aspect_ratio * half_height
+    #     self.cam_lower_left_corner[None] = ti.Vector([-half_width, -half_height, -1.0])
+    #     self.cam_lower_left_corner[
+    #         None] = self.cam_origin[None] - half_width * u - half_height * v - w
+    #     self.cam_horizontal[None] = 2 * half_width * u
+    #     self.cam_vertical[None] = 2 * half_height * v
+    #
+    # def rot_z(self, t):
+    #     self.lookfrom[None][0] = 9.0 * ti.cos(t/100)
+    #     self.lookfrom[None][1] = 9.0 * ti.sin(t/100)
+    #     self.reset_after_move()
 
     @ti.func
     def get_ray(self, u, v):

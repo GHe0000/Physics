@@ -74,3 +74,4 @@ if __name__ == "__main__":
         cnt += 1
         gui.set_image(np.sqrt(bloom_img.to_numpy() / cnt))
         gui.show()
+    ti.tools.imwrite(np.sqrt(bloom_img.to_numpy() / cnt), "./frame.png")
