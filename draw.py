@@ -5,14 +5,10 @@ data = np.load('data200.npz')
 t = data['t']
 sol = data['sol']
 
-# t = t[:10**5]
-# sol = sol[:10**5]
-
 plt.plot(t, sol[:,0])
 plt.xlabel('time (s)')
 plt.ylabel('angle (rad)')
 plt.show()
-
 
 t = t[:100]
 sol = sol[:100]
