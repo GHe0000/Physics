@@ -7,8 +7,7 @@ def random_walk_1d(r,n):
     steps = np.random.uniform(-r,r,n)
     steps[0] = 0
     y = np.cumsum(steps)
-    y_norm = (y - y.min())/(y.max() - y.min())
-    return x,y_norm 
+    return x,y 
 
 def circle(n):
     x_half = np.linspace(-1,1,n)
@@ -51,7 +50,7 @@ def visualize_boxs(covered_boxs, box_size, ax, **kwargs):
     collection = mpl.collections.PatchCollection(patches, **kwargs)
     ax.add_collection(collection)
 
-r = 1
+r = 0.1
 n = 5000
 x,y = random_walk_1d(r,n)
 # x,y = circle(n)
