@@ -1,12 +1,11 @@
 # 一个辛积分器库
+# Symplectic Partitioned Runge-Kutta
+# 8 阶的辛分区 Runge-Kutta 法求解器
 import numpy as np
 import numba as nb
+from typing import Tuple, Callable
 
 def _SPRK_loop(force_func, mass, q0, p0, dt, n_step):
-    """
-    SPRK 的内部循环，使用 numba 加速
-    """
-
     # 辛积分器的常数，来自文献：
     # Laskar, J., & Robutel, P. (2001). High order symplectic integrators for the Solar System. Celestial Mechanics and Dynamical Astronomy, 80(1), 39-62.
 
@@ -49,24 +48,45 @@ def _SPRK_loop(force_func, mass, q0, p0, dt, n_step):
         p_save[i+1] = p
     return q_save, p_save    
 
-def SPRK(force_func, mass, y0, t, dt):
+
+def SPRK(
+        force_func: Callable[[np.ndarray], np.ndarray],
+        mass: np.ndarray,
+        y0: Tuple[np.ndarray, np.ndarray],
+        t: float,
+        dt: float
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     一个 8 阶的辛分区 Runge-Kutta 法 Hamilton 方程求解器. 
-    
-    此函数用来计算一个形如 H(q,p) = T(p) + V(q) 的 Hamilton 系统的演化
-    
-    Args：
-        force_func(callable): 力函数，计算 `f(q)`，建议使用 numba 加速
-        mass(np.ndarray): 粒子的质量.
-        y0(tuple): 初始条件 `(q0, p0)`
-        t(float): 起始时间
-        dt(float): 时间步长
-    
-    Returns:
-        tuple: `(t, q, p)`
-        - t(np.ndarray): 时间序列
-        - q(np.ndarray): 对应时间的位置
-        - p(np.ndarray): 对应时间的速度
+
+    此函数使用由Laskar & Robutel提出的 8 阶辛积分方法，对形如
+    H(q,p) = T(p) + V(q) 的可分离哈密顿系统进行数值积分.
+
+    函数会自动检查 `force_func` 是否被Numba编译，以实现高性能计算.
+
+    Parameters
+    ----------
+    force_func : callable
+        计算力的函数，`f(q) = -dV(q)/dq`
+        其函数签名为 `f(q) -> F`，其中 q 和 F 均为 NumPy 数组.
+        为了获得最佳性能，此函数应由 Numba 的 njit 装饰器编译.
+    mass : np.ndarray
+        每个粒子的质量.
+    y0 : tuple of np.ndarray
+        一个包含初始位置和初始动量的元组 `(q0, p0)`.
+    t : float
+        总积分时间.
+    dt : float
+        每个积分步长的时间间隔.
+
+    Returns
+    -------
+    t_eval : np.ndarray
+        从0到总积分时间的时刻数组，形状为 `(n_step + 1,)`.
+    q : np.ndarray
+        位置的轨迹数组，形状为 `(n_step + 1, N)`.
+    p : np.ndarray
+        动量的轨迹数组，形状为 `(n_step + 1, N)`.
     """
 
     q0, p0 = y0
