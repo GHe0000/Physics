@@ -1,31 +1,21 @@
 import numpy as np
 import numba as nb
-
 import matplotlib.pyplot as plt
-
 from scipy.integrate import solve_ivp
-from SymplecticIntegrator import SPRK 
 
-import time
-from functools import wraps
-
-def Timer(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        start_time = time.perf_counter()
-        result = func(*args, **kwargs)
-        end_time = time.perf_counter()
-        print(f"Function {func.__name__} : runtime: {end_time - start_time:.4f} s")
-        return result
-    return wrapper
-
+from tools.timer import Timer
+from tools.sprk import SPRK8
 
 k = 1.0
 m = 1.0 
 
 @nb.njit
-def f(q):
-    return -k*q
+def dV(q):
+    return k*q
+
+@nb.njit 
+def dT(p):
+    return p / m
 
 def scipy_f(t, y):
     q, p = y
@@ -40,8 +30,9 @@ t = 5000.0
 dt = 0.01
 
 @Timer
-def run_SPRK(f, m, y0, t, dt):
-    t, q, p = SPRK(f, m, y0, t, dt)
+def run_SPRK(dT, dV, q0, p0, t, dt):
+    t, q, p = SPRK8(gradT=dT, gradV=dV, q0=q0, p0=p0, t=t, dt=dt)
+    print(f'{t.shape=}, {q.shape=}, {p.shape=}')
     return t, q.T.flatten(), p.T.flatten()
 
 @Timer
@@ -49,7 +40,7 @@ def run_rk45(scipy_f, y0, t, dt):
     sol = solve_ivp(scipy_f, [0, t], y0, t_eval=np.arange(0, t, dt), method='RK45')
     return sol.t, sol.y[0, :].flatten(), sol.y[1, :].flatten()
 
-t1, q1, p1 = run_SPRK(f, m, (q0, p0), t, dt)
+t1, q1, p1 = run_SPRK(dT, dV, q0, p0, t, dt)
 t2, q2, p2 = run_rk45(scipy_f, np.concatenate((q0, p0)), t, dt)
 
 def calc_energy(q, p):
