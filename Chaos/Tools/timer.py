@@ -1,3 +1,5 @@
+# 简单的函数计时器
+
 import time
 from functools import wraps 
 
