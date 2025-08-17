@@ -32,7 +32,6 @@ dt = 0.01
 @Timer
 def run_SPRK(dT, dV, q0, p0, t, dt):
     t, q, p = SPRK8(gradT=dT, gradV=dV, q0=q0, p0=p0, t=t, dt=dt)
-    print(f'{t.shape=}, {q.shape=}, {p.shape=}')
     return t, q.T.flatten(), p.T.flatten()
 
 @Timer
