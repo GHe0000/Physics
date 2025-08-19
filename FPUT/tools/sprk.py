@@ -2,6 +2,7 @@
 # 8 阶的辛分区 Runge-Kutta 法求解器
 import numpy as np
 import numba as nb
+from typing import Callable
 
 def _SPRK_core(gradT, gradV, q0, p0, dt, n_step):
     # 辛积分器的常数，来自文献：
@@ -46,8 +47,8 @@ def _SPRK_core(gradT, gradV, q0, p0, dt, n_step):
     return q_save, p_save
 
 def SPRK8(
-        gradT: callable[[np.ndarray], np.ndarray],
-        gradV: callable[[np.ndarray], np.ndarray],
+        gradT: Callable[[np.ndarray], np.ndarray],
+        gradV: Callable[[np.ndarray], np.ndarray],
         q0: np.ndarray,
         p0: np.ndarray,
         t: float,
