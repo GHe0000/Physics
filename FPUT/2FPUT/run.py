@@ -17,7 +17,7 @@ dt = 0.5
 t_max = 10**5
 
 # 保存参数
-t_per_save = 100 # 每隔多少计算的时间保存一次
+save_dt = 100 # 每隔多少计算的时间保存一次
 save_path = "./save/data.h5"
 
 m1 = 1 - delta / 2
@@ -141,15 +141,15 @@ if __name__ == '__main__':
         f.create_dataset('p', data=p, maxshape=(None, N), chunks=True)
         f.create_dataset('t', data=np.array([0.0]), maxshape=(None,), chunks=True)
 
-    n_chunk = int(t_max / t_per_save)
+    n_chunk = int(t_max / save_dt)
     q_last = q.copy()
     p_last = p.copy()
 
     for chunk_idx in range(n_chunk):
-        t_start = chunk_idx * t_per_save
-        t_end = (chunk_idx+1) * t_per_save
+        t_start = chunk_idx * save_dt
+        t_end = (chunk_idx+1) * save_dt
 
-        q_save, p_save = calc_chunk(q, p, m, int(t_per_save/dt), dt)
+        q_save, p_save = calc_chunk(q, p, m, int(save_dt/dt), dt)
         t_save = np.arange(t_start, t_end, dt)
 
         with h5py.File(save_path, 'a') as f:
