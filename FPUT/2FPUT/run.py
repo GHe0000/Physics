@@ -3,7 +3,8 @@ import numba as nb
 import matplotlib.pyplot as plt
 import h5py
 
-from tools.timer import Timer
+from tools.timer import FunctionTimer
+from tools.timer import LapTimer
 
 # 模型常数
 N = 32 # 粒子数
@@ -62,7 +63,7 @@ def SPRK8_step(q, p, m, dt):
     return q, p
 
 # 计算简振模
-@Timer
+@FunctionTimer
 def calc_normal_mode():
     k = np.arange(1, L+1) # 波数
     
@@ -163,6 +164,8 @@ if __name__ == '__main__':
     q_last = q.copy()
     p_last = p.copy()
 
+    timer_per_chunk = LapTimer()
+
     for chunk_idx in range(n_chunk):
         t_start = chunk_idx * save_dt
         t_end = (chunk_idx+1) * save_dt
@@ -188,7 +191,9 @@ if __name__ == '__main__':
 
         q_last = q_save[-1]
         p_last = p_save[-1]
-        print("{chunk_idx+1}/{n_chunk}", end="\r")
+
+        calc_time = timer_per_chunk()
+        print("{chunk_idx+1}/{n_chunk}, {calc_time:.2f}s", end="\r")
 
     print("Calc done.")
 
