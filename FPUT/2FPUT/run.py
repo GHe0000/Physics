@@ -1,6 +1,6 @@
 import numpy as np
 import numba as nb
-import mathplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import h5py
 
 from tools.timer import Timer
@@ -17,7 +17,7 @@ dt = 0.5
 t_max = 10**5
 
 # 保存参数
-save_dt = 100 # 每隔多少计算的时间保存一次
+save_dt = 200 # 每隔多少计算的时间保存一次
 save_path = "./save/data.h5"
 
 m1 = 1 - delta / 2
@@ -30,7 +30,7 @@ m[1::2] = m2
 @nb.njit()
 def SPRK8_step(q, p, m, dt):
     def gradT(p, m):
-        pass
+        return p / m
     def gradV(q):
         pass
     # 积分器常数
@@ -69,7 +69,7 @@ def calc_normal_mode():
     tmp = np.sqrt(1 - (4*m1*m2)/((m1+m2)**2) * np.sin(k*np.pi/(2*L+1))**2)
     omega_sq_plus = (m1+m2)/(m1*m2) * (1+tmp) # plus 为 optical branch（光学支）
     omega_sq_minus = (m1+m2)/(m1*m2) * (1-tmp) # minus 为 acoustic branch（声学支）
-    omega_sq = np.concatenate((omega_sq_plus, omega_sq_minus))
+    omega_sq = np.concatenate((omega_sq_minus, omega_sq_plus[::-1]))
     omega = np.sqrt(omega_sq)
 
     u_plus = np.zeros((N,L))
@@ -78,7 +78,9 @@ def calc_normal_mode():
     k_idx = np.arange(1, L+1)[:, np.newaxis]
     j_idx = np.arange(1, N+1)[np.newaxis, :]
 
-    l_idx = (j_idx+1) // 2
+    #l_idx = (j_idx+1) // 2
+
+    l_idx = np.arange(1, N//2 + 1)[:, np.newaxis]
 
     tmp1 = np.sin(2*l_idx*k_idx*np.pi/(2*L+1))
     tmp2 = np.sin(2*(l_idx-1)*k_idx*np.pi/(2*L+1))
@@ -90,7 +92,7 @@ def calc_normal_mode():
     u_minus[0::2, :] = (tmp1 + tmp2) / tmp3
     u_minus[1::2, :] = (2 - m1*omega_sq_minus) * tmp1 / tmp3
 
-    u = np.concatenate((u_plus, u_minus), axis=1)
+    u = np.concatenate((u_minus, u_plus[::-1, :]), axis=1)
 
     U, _ = np.linalg.qr(u)
     return omega, U
@@ -102,12 +104,29 @@ def calc_E_k(p, q, m, omega, U):
     E = 0.5 * (P**2 + omega**2 * Q**2)
     return E
 
-def initialize(omega, U):
+def initialize(m, omega, U, epsilon, k=0.1):
     sort_idx = np.argsort(omega)
     omega = omega[sort_idx]
     U = U[:, sort_idx]
 
-    pass
+    N = m.shape[0]
+
+    N_excited = int(k * N)
+    N_excited = 1 if N_excited < 1 else N_excited
+
+    E_tot = N * epsilon
+    E_k = np.zeros(N)
+    E_k[:N_excited] = E_tot / N_excited
+
+    phi_k = np.random.uniform(0, 2*np.pi, N)
+
+    Q = np.sqrt(2*E_k / omega**2) * np.sin(phi_k)
+    P = np.sqrt(2*E_k) * np.cos(phi_k)
+
+    q0 = np.einsum('k,jk->j', Q, U)
+    p0 = m * np.einsum('k,jk->j', P, U)
+
+    return q0, p0
 
 
 @nb.njit()
@@ -127,10 +146,9 @@ def calc_chunk(q0, p0, m, n_steps, dt):
 
 if __name__ == '__main__':
     # 初始化粒子
-    p0 = np.zeros(N) # 占位
-    q0 = np.zeros(N) # 占位
-
     omega, U = calc_normal_mode()
+
+    q0, p0 = initialize(m, omega, U, epsilon)
 
     p = p0.copy()
     q = q0.copy()
