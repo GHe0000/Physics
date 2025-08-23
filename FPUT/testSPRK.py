@@ -3,7 +3,7 @@ import numba as nb
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
-from tools.timer import Timer
+from tools.timer import FunctionTimer as Timer
 from tools.sprk import SPRK8
 
 k = 1.0

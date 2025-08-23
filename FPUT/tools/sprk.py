@@ -115,3 +115,96 @@ def SPRK8(
         loop_func = _SPRK_core
     q, p = loop_func(gradT, gradV, q0, p0, dt, n_step)
     return t_eval, q, p
+
+
+# Leapfrog Symplectic Integrator
+# 2 阶的蛙跳法（Leapfrog）辛积分器
+
+def _leapfrog_core(gradT, gradV, q0, p0, dt, n_step):
+    q_save = np.zeros((n_step + 1, len(q0)))
+    p_save = np.zeros((n_step + 1, len(p0)))
+
+    q_save[0] = q0
+    p_save[0] = p0
+
+    q = q0.copy()
+    p = p0.copy()
+
+    half_dt = 0.5 * dt
+    for i in range(n_step):
+        p -= half_dt * gradV(q)
+        q += dt * gradT(p)
+        p -= half_dt * gradV(q)
+
+        q_save[i+1] = q
+        p_save[i+1] = p
+    return q_save, p_save
+
+def Leapfrog(
+        gradT: Callable[[np.ndarray], np.ndarray],
+        gradV: Callable[[np.ndarray], np.ndarray],
+        q0: np.ndarray,
+        p0: np.ndarray,
+        t: float,
+        dt: float
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    一个通用的 2 阶 Leapfrog 辛积分器 Hamilton 方程求解器.
+
+    此函数使用 Leapfrog 方法（也称为位置 Verlet 法），对形如
+    H(q,p) = T(p) + V(q) 的可分离哈密顿系统进行数值积分.
+
+    函数会自动检查梯度函数是否被 Numba 编译，以实现高性能计算.
+
+    Parameters
+    ----------
+    gradT : callable
+        计算动能梯度 dT/dp 的函数.
+        函数签名为 `f(p) -> np.ndarray`.
+        为了获得最佳性能，此函数应由 Numba 的 njit 装饰器编译.
+
+    gradV : callable
+        计算势能梯度 dV/dq 的函数.
+        函数签名为 `f(q) -> np.ndarray`.
+        为了获得最佳性能，此函数应由 Numba 的 njit 装饰器编译.
+
+    q0 : np.ndarray
+        初始位置.
+
+    p0 : np.ndarray
+        初始动量.
+
+    t : float
+        总计算时间.
+
+    dt : float
+        每个积分步长的时间间隔.
+
+    Returns
+    -------
+    t_eval : np.ndarray
+        从 0 到总积分时间的时刻数组，形状为 `(n_step + 1,)`.
+    q : np.ndarray
+        位置的轨迹数组，形状为 `(n_step + 1, N)`.
+    p : np.ndarray
+        动量的轨迹数组，形状为 `(n_step + 1, N)`.
+    """
+    q0 = np.asarray(q0, dtype=np.float64)
+    p0 = np.asarray(p0, dtype=np.float64)
+
+    n_step = int(t / dt)
+    t_eval = np.linspace(0, t, n_step + 1)
+
+    # 检查两个函数是否都被 Numba 编译
+    is_jitted = (isinstance(gradT, nb.core.dispatcher.Dispatcher) and
+                 isinstance(gradV, nb.core.dispatcher.Dispatcher))
+
+    if is_jitted:
+        loop_func = nb.njit(_leapfrog_core)
+    else:
+        print("Warning: One or both gradient functions are not numba-compiled, may be slow.")
+        loop_func = _leapfrog_core
+
+    q, p = loop_func(gradT, gradV, q0, p0, dt, n_step)
+
+    return t_eval, q, p
