@@ -30,10 +30,23 @@ m[1::2] = m2
 
 @nb.njit()
 def SPRK8_step(q, p, m, dt):
+    # H = sum(p_i**2/2m_i + V(q_i-q_{i-1})
+    # H_i = p_i**2/2m_i + V(q_i-q_{i-1}) + V(q_{i+1}-q_i)
+    # dh_i = p_i / m_i + V'(q_i-q_{i-1}) - V'(q_{i+1}-q_i)
     def gradT(p, m):
-        return p / m
+        return p / m 
+
+    def dV(x):
+        return (-2 + 2*np.exp(2*x)) / 4
+
     def gradV(q):
-        pass
+        tmp = np.zeros(N+2)
+        tmp[1:-1] = q
+        u = q
+        u_p1 = tmp[2:]
+        u_m1 = tmp[:-2]
+        return dV(u-u_m1) - dV(u_p1-u)
+
     # 积分器常数
     C_COEFFS = np.array([
         0.195557812560339,
@@ -106,6 +119,8 @@ def calc_E_k(p, q, m, omega, U):
     return E
 
 def initialize(m, omega, U, epsilon, k=0.1):
+    omega = omega.copy()
+    U = U.copy()
     sort_idx = np.argsort(omega)
     omega = omega[sort_idx]
     U = U[:, sort_idx]
@@ -156,8 +171,8 @@ if __name__ == '__main__':
 
     # 初始化保存
     with h5py.File(save_path, 'w') as f:
-        f.create_dataset('q', data=q, maxshape=(None, N), chunks=True)
-        f.create_dataset('p', data=p, maxshape=(None, N), chunks=True)
+        f.create_dataset('q', data=q[np.newaxis, :], maxshape=(None, N), chunks=True)
+        f.create_dataset('p', data=p[np.newaxis, :], maxshape=(None, N), chunks=True)
         f.create_dataset('t', data=np.array([0.0]), maxshape=(None,), chunks=True)
 
     n_chunk = int(t_max / save_dt)
@@ -193,7 +208,7 @@ if __name__ == '__main__':
         p_last = p_save[-1]
 
         calc_time = timer_per_chunk()
-        print("{chunk_idx+1}/{n_chunk}, {calc_time:.2f}s", end="\r")
+        print(f"{chunk_idx+1}/{n_chunk}, {calc_time:.2f}s", end="\r")
 
     print("Calc done.")
 

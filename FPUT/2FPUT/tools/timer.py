@@ -11,7 +11,7 @@ def FunctionTimer(func):
         return result
     return wrapper
 
-def LapTimer:
+class LapTimer:
     def __init__(self):
         self.time = None
     def __call__(self):
