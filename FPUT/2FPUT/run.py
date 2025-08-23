@@ -6,16 +6,18 @@ import h5py
 from tools.timer import FunctionTimer
 from tools.timer import LapTimer
 
+np.random.seed(3407)
+
 # 模型常数
 N = 32 # 粒子数
 L = N // 2 # 晶胞
-beta = 0.1
-delta = 0.1
-epsilon = 0.1
+delta = 0.0
+epsilon = 0.01
 
 # 模拟参数
-dt = 0.5
-t_max = 10**5
+dt = 0.1
+t_max = 10**4
+# t_max = 200
 
 # 保存参数
 save_dt = 200 # 每隔多少计算的时间保存一次
@@ -28,8 +30,18 @@ m = np.zeros(N)
 m[0::2] = m1
 m[1::2] = m2
 
+def H(q, p, m): 
+    def V(x):
+        return 0.25 * (np.exp(2*x) - 2*x -1)
+    tmp = np.zeros(N+1)
+    tmp[1:] = q
+    u_m1 = tmp[:-1]
+    return np.sum(p**2/(2*m) + V(q-u_m1))
+
 @nb.njit()
 def SPRK8_step(q, p, m, dt):
+    q = q.copy()
+    p = p.copy()
     # H = sum(p_i**2/2m_i + V(q_i-q_{i-1})
     # H_i = p_i**2/2m_i + V(q_i-q_{i-1}) + V(q_{i+1}-q_i)
     # dh_i = p_i / m_i + V'(q_i-q_{i-1}) - V'(q_{i+1}-q_i)
@@ -37,7 +49,7 @@ def SPRK8_step(q, p, m, dt):
         return p / m 
 
     def dV(x):
-        return (-2 + 2*np.exp(2*x)) / 4
+        return 0.5*(np.exp(2*x) - 1)
 
     def gradV(q):
         tmp = np.zeros(N+2)
@@ -165,15 +177,16 @@ if __name__ == '__main__':
     omega, U = calc_normal_mode()
 
     q0, p0 = initialize(m, omega, U, epsilon)
+    print(f"Initial H = {H(q0, p0, m)}")
 
     p = p0.copy()
     q = q0.copy()
 
     # 初始化保存
-    with h5py.File(save_path, 'w') as f:
-        f.create_dataset('q', data=q[np.newaxis, :], maxshape=(None, N), chunks=True)
-        f.create_dataset('p', data=p[np.newaxis, :], maxshape=(None, N), chunks=True)
-        f.create_dataset('t', data=np.array([0.0]), maxshape=(None,), chunks=True)
+    # with h5py.File(save_path, 'w') as f:
+    #     f.create_dataset('q', data=q[np.newaxis, :], maxshape=(None, N), chunks=True)
+    #     f.create_dataset('p', data=p[np.newaxis, :], maxshape=(None, N), chunks=True)
+    #     f.create_dataset('t', data=np.array([0.0]), maxshape=(None,), chunks=True)
 
     n_chunk = int(t_max / save_dt)
     q_last = q.copy()
@@ -188,32 +201,41 @@ if __name__ == '__main__':
         q_save, p_save = calc_chunk(q, p, m, int(save_dt/dt), dt)
         t_save = np.arange(t_start, t_end, dt)
 
-        with h5py.File(save_path, 'a') as f:
-            dset_q = f['q']
-            dset_p = f['p']
-            dset_t = f['t']
-
-            current_size = dset_t.shape[0]
-            new_size = current_size + t_save.shape[0]
-
-            dset_q.resize(new_size, axis=0)
-            dset_p.resize(new_size, axis=0)
-            dset_t.resize(new_size, axis=0)
-
-            dset_q[current_size:] = q_save
-            dset_p[current_size:] = p_save
-            dset_t[current_size:] = t_save
+        # with h5py.File(save_path, 'a') as f:
+        #     dset_q = f['q']
+        #     dset_p = f['p']
+        #     dset_t = f['t']
+        #
+        #     current_size = dset_t.shape[0]
+        #     new_size = current_size + t_save.shape[0]
+        #
+        #     dset_q.resize(new_size, axis=0)
+        #     dset_p.resize(new_size, axis=0)
+        #     dset_t.resize(new_size, axis=0)
+        #
+        #     dset_q[current_size:] = q_save
+        #     dset_p[current_size:] = p_save
+        #     dset_t[current_size:] = t_save
 
         q_last = q_save[-1]
         p_last = p_save[-1]
 
-        calc_time = timer_per_chunk()
-        print(f"{chunk_idx+1}/{n_chunk}, {calc_time:.2f}s", end="\r")
+        q = q_last.copy()
+        p = p_last.copy()
 
-    print("Calc done.")
+        E_tot = np.sum(calc_E_k(p_last, q_last, m, omega, U))
+        H_tot = H(q_last, p_last, m)
+
+        calc_time = timer_per_chunk()
+        print(f"{chunk_idx+1}/{n_chunk}, E={E_tot}, H={H_tot}, {calc_time:.2f}s", end="\n")
+
+    print("\nCalc done.")
 
     E_k_start = calc_E_k(p0, q0, m, omega, U)
     E_k_end = calc_E_k(p_last, q_last, m, omega, U)
+
+    print(f"{np.max(E_k_start)=}, {np.min(E_k_start)=}, {np.sum(E_k_start)=}")
+    print(f"{np.max(E_k_end)=}, {np.min(E_k_end)=}, {np.sum(E_k_end)=}")
 
     omega_idx = np.arange(1, omega.shape[0]+1)
     plt.plot(omega_idx, E_k_start, label='start')
