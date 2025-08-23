@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 # Assuming the SPRK8 tool is in the specified path
 from tools.sprk import SPRK8
+from tools.sprk import Leapfrog
 
 # 模拟参数
 N = 32
@@ -55,7 +56,7 @@ def energy_n(q, p, n):
     return 0.5 * (xi_dot**2 + omega_sq[n] * xi**2)
 
 print("Running FPUT-Beta Simulation...")
-t, q, p = SPRK8(
+t, q, p = Leapfrog(
     gradT=gradT,
     gradV=gradV,
     q0=q0,

@@ -3,6 +3,7 @@ import numba as nb
 import matplotlib.pyplot as plt
 
 from tools.sprk import SPRK8 
+from tools.sprk import Leapfrog
 
 # 模拟参数
 N = 32
@@ -18,6 +19,12 @@ omega = np.sqrt(omega_sq)
 # 初始化
 q0, p0 = np.zeros(N+2), np.zeros(N+2)
 q0[1:N+1] = 4 * mode_shape[:,0]
+
+def H(q, p):
+    V = lambda x: 0.5 * x**2 + alpha/3 * x**3
+    tmp = np.zeros_like(q)
+    tmp[2:N+2] = p[1:N+1]
+    return np.sum(p**2 + V(q-tmp), axis=1)
 
 # 动力学模型
 @nb.njit
@@ -42,7 +49,7 @@ def energy_n(q, p, n):
     return 0.5 * (xi_dot**2 + omega_sq[n] * xi**2)
 
 print("Running Simulation...")
-t, q, p = SPRK8(
+t, q, p = Leapfrog(
     gradT=gradT,
     gradV=gradV,
     q0=q0,
@@ -60,4 +67,9 @@ for i in range(5):
 ax.set_xlabel("Time (s)")
 ax.set_ylabel("Energy (J)")
 ax.legend()
+plt.show()
+
+Ht = H(q, p)
+print(f"Hmax = {np.max(Ht)}, Hmin = {np.min(Ht)}, Hmean = {np.mean(Ht)}")
+plt.plot(t, Ht-Ht[0])
 plt.show()
