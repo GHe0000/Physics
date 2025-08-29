@@ -8,7 +8,7 @@ from tools.sprk import Leapfrog
 # 模拟参数
 N = 32
 dt = 0.1
-alpha = 1.0
+alpha = 0.25
 t_end = 30000
 
 # 刚度矩阵
@@ -69,7 +69,26 @@ ax.set_ylabel("Energy (J)")
 ax.legend()
 plt.show()
 
-Ht = H(q, p)
-print(f"Hmax = {np.max(Ht)}, Hmin = {np.min(Ht)}, Hmean = {np.mean(Ht)}")
-plt.plot(t, Ht-Ht[0])
+def calculate_hamiltonian(q, p):
+    # 动能部分
+    kinetic_energy = 0.5 * np.sum(p[1:N+1]**2)
+    # 势能部分
+    diff_q = q[1:N+2] - q[0:N+1]
+    potential_energy = np.sum(0.5 * diff_q**2 + (alpha / 3.0) * diff_q**3)
+    return kinetic_energy + potential_energy
+
+H_t = np.array([calculate_hamiltonian(q[i], p[i]) for i in range(len(t))])
+fig2, ax2 = plt.subplots(figsize=(12, 6))
+energy_error = H_t - H_t[0]
+ax2.plot(t, energy_error)
+ax2.set_xlabel("Time", fontsize=14)
+ax2.set_ylabel("Hamiltonian Error ($H(t) - H(0)$)", fontsize=14)
+ax2.set_title("Hamiltonian Conservation Error", fontsize=16)
+plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+plt.tight_layout()
 plt.show()
+
+print("\nAnalysis:")
+print(f"Initial total energy H(0) = {H_t[0]:.6f}")
+print(f"Maximum energy error |H(t) - H(0)|_max = {np.max(np.abs(energy_error)):.6e}")
+print(f"Mean energy error = {np.mean(energy_error):.6e}")
