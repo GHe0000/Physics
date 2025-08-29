@@ -4,9 +4,7 @@ import numpy as np
 import numba as nb
 from typing import Callable
 
-def _SPRK_core(gradT, gradV, q0, p0, dt, n_step):
-    # 辛积分器的常数，来自文献：
-    # Laskar, J., & Robutel, P. (2001). High order symplectic integrators for the Solar System. Celestial Mechanics and Dynamical Astronomy, 80(1), 39-62.
+def _Yo8_core(gradT, gradV, q0, p0, dt, n_step):
 
     C_COEFFS = np.array([
         0.195557812560339,
@@ -46,7 +44,7 @@ def _SPRK_core(gradT, gradV, q0, p0, dt, n_step):
         p_save[i+1] = p
     return q_save, p_save
 
-def SPRK8(
+def Yo8(
         gradT: Callable[[np.ndarray], np.ndarray],
         gradV: Callable[[np.ndarray], np.ndarray],
         q0: np.ndarray,
@@ -109,9 +107,9 @@ def SPRK8(
                  isinstance(gradV, nb.core.dispatcher.Dispatcher))
 
     if is_jitted:
-        loop_func = nb.njit(_SPRK_core)
+        loop_func = nb.njit(_Yo8_core)
     else:
         print("Warning: One or both gradient functions are not numba-compiled, may be slow.")
-        loop_func = _SPRK_core
+        loop_func = _Yo8_core
     q, p = loop_func(gradT, gradV, q0, p0, dt, n_step)
     return t_eval, q, p
