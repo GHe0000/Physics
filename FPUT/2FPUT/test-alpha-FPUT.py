@@ -6,19 +6,20 @@ from scipy.linalg import eigh
 np.random.seed(3407)
 
 N = 32
-delta = 0.5
+delta = 0.
 epsilon = 0.1
-beta = 0.01
+alpha = 0.25
 
-t_end = 10**7
+t_end = 1E4
 dt = 0.1
 
 m1 = 1 - delta / 2
 m2 = 1 + delta / 2
 
 def calc_H(q, p, m):
-    V = lambda x: x**2 / 2.0 + beta * x**4 / 4.0
-    q_m1 = np.concatenate((np.zeros(1), q[:-1]))
+    V = lambda x: x**2 / 2.0 + alpha * x**3 / 3.0
+    q_m1 = np.zeros(N)
+    q_m1[1:] = q[:-1]
     T = np.sum(V(q - q_m1)) + V(q[-1])
     U = np.sum(p**2 / (2 * m))
     return T + U
@@ -63,15 +64,16 @@ def initialize(m, omega, U, epsilon, k=0.1):
 def SPRK8_step(q, p, m, dt):
     q = q.copy()
     p = p.copy()
-    def gradT(p, m):
-        return p / m 
 
-    def dV(x):
-        return x + beta * x**3
+    def gradT(p, m):
+        return p / m
 
     def gradV(q):
-        q_m1 = np.concatenate((np.zeros(1), q[:-1]))
-        q_p1 = np.concatenate((q[1:], np.zeros(1)))
+        dV = lambda x: x + alpha * x**2
+        q_m1 = np.zeros(N)
+        q_m1[1:] = q[:-1]
+        q_p1 = np.zeros(N)
+        q_p1[:-1] = q[1:]
         return dV(q - q_m1) - dV(q_p1 - q)
 
     # 积分器常数
@@ -85,7 +87,6 @@ def SPRK8_step(q, p, m, dt):
         0.433890397482848,
         0.195557812560339,
     ])
-    
     D_COEFFS = np.array([
         0.0977789062801695,
         0.289196093121589,
@@ -109,9 +110,9 @@ if __name__ == '__main__':
     m[1::2] = m2
 
     omega, U = normal_mode(m)
-    q0, p0 = initialize(m, omega, U, epsilon, k=0.1)
-    Ek= calc_Ek(q0, p0, m, omega, U)
-    
+    q0, p0 = initialize(m, omega, U, epsilon, k=0)
+    Ek = calc_Ek(q0, p0, m, omega, U)
+
     sort_idx = np.argsort(omega)
     plt.figure(figsize=(10, 6))
     plt.plot(Ek[sort_idx], 'o-')
@@ -123,16 +124,46 @@ if __name__ == '__main__':
 
     q = q0.copy()
     p = p0.copy()
-    for step in range(int(t_end / dt)):
-        q, p = SPRK8_step(q, p, m, dt)
-        if step % int(10**5 / dt) == 0:
-            print(f"step={step}, H={calc_H(q, p, m)}")
+    nsteps = int(t_end / dt)
 
-    H_t = calc_H(q, p, m)
-    Ek_t = calc_Ek(q, p, m, omega, U)
-    print(f"H_t={H_t}, sum Ek_t={np.sum(Ek_t)}, H_t-sum Ek_t={H_t-np.sum(Ek_t)}")
+    Ekt = np.zeros((nsteps+1, 5))
+    Ht = np.zeros(nsteps+1)
+    t_span = np.arange(nsteps+1) * dt
+
+    Ekt[0] = calc_Ek(q, p, m, omega, U)[:5]
+    Ht[0] = calc_H(q, p, m)
+
+    for step in range(nsteps):
+        q, p = SPRK8_step(q, p, m, dt)
+        Ekt[step+1] = calc_Ek(q, p, m, omega, U)[:5]
+        Ht[step+1] = calc_H(q, p, m)
+
+    Hend = calc_H(q, p, m)
+    Ekend = calc_Ek(q, p, m, omega, U)
+    print(f"H_t={Hend}, sum Ek_t={np.sum(Ekend)}, H_t-sum Ek_t={Hend-np.sum(Ekend)}")
     sort_idx = np.argsort(omega)
     plt.figure(figsize=(10, 6))
-    plt.plot(Ek_t[sort_idx], 'o-')
+    plt.plot(Ekend[sort_idx], 'o-')
     plt.grid(True)
     plt.show()
+
+    plt.figure(figsize=(10, 6))
+    for i in range(5):
+        plt.plot(t_span, Ekt[:, i], label=f'q{i}')
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax2 = ax.twinx()
+    ax2.plot(t_span, (Ht-Ht[0])/Ht[0], label='error', color='r')
+    ax2.set_ylabel('error')
+    ax.plot(t_span, Ht, label='H', color='b')
+    ax.set_xlabel('t')
+    ax.set_ylabel('H')
+    ax.grid(True)
+    lines, labels = ax.get_legend_handles_labels()
+    bars, bar_labels = ax2.get_legend_handles_labels()
+    ax.legend(lines + bars, labels + bar_labels, loc='upper left')
+    plt.show()
+    print(f"max error = {np.max(np.abs( (Ht-Ht[0])/Ht[0] ))}")
