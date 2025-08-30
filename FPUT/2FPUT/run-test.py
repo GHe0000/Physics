@@ -1,17 +1,21 @@
 import numpy as np
 import numba as nb
 import matplotlib.pyplot as plt
+
 from scipy.linalg import eigh
+
+from tools.timer import LapTimer
 
 np.random.seed(3407)
 
 N = 32
 delta = 0.5
 epsilon = 0.1
-beta = 0.01
+beta = 0.2
 
 t_end = 10**7
 dt = 0.1
+t_save = 10**6
 
 m1 = 1 - delta / 2
 m2 = 1 + delta / 2
@@ -103,6 +107,21 @@ def Yo8_step(q, p, m, dt):
     return q, p
 
 
+@nb.njit(fastmath=True, nogil=True)
+def calc_chunk(q0, p0, m, n_steps, dt):
+    # 这里 q0, p0, 并不保存在 q_save, p_save 中
+    q_save = np.zeros((n_steps, q0.shape[0]))
+    p_save = np.zeros((n_steps, p0.shape[0]))
+
+    q = q0.copy()
+    p = p0.copy()
+
+    for step in range(n_steps):
+        q, p = Yo8_step(q, p, m, dt)
+        q_save[step] = q
+        p_save[step] = p 
+    return q_save, p_save
+
 if __name__ == '__main__':
     m = np.zeros(N)
     m[0::2] = m1
@@ -121,12 +140,24 @@ if __name__ == '__main__':
     H = calc_H(q0, p0, m)
     print(f"H={H}, sum Ek={np.sum(Ek)}, H-sum Ek={H-np.sum(Ek)}")
 
-    q = q0.copy()
-    p = p0.copy()
-    for step in range(int(t_end / dt)):
-        q, p = Yo8_step(q, p, m, dt)
-        if step % int(10**5 / dt) == 0:
-            print(f"step={step}, H={calc_H(q, p, m)}")
+    
+    q_last = q0.copy()
+    p_last = p0.copy()
+
+    timer = LapTimer()
+    n_chunk = int(t_end / t_save)
+    
+    for chunk_idx in range(n_chunk):
+        q_save, p_save = calc_chunk(q_last, p_last, m, int(t_save / dt), dt)
+        q_last = q_save[-1]
+        p_last = p_save[-1]
+        Et = np.sum(calc_Ek(q_last, p_last, m, omega, U))
+        Ht = calc_H(q_last, p_last, m)
+        calc_time = timer()
+        print(f"chunk {chunk_idx+1}/{n_chunk}, H={Ht}, E={Et}, {calc_time:.2f}")
+
+    q = q_last.copy()
+    p = p_last.copy()
 
     H_t = calc_H(q, p, m)
     Ek_t = calc_Ek(q, p, m, omega, U)
