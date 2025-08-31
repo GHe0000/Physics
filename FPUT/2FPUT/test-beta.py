@@ -3,15 +3,18 @@ import numba as nb
 import matplotlib.pyplot as plt
 from scipy.linalg import eigh
 
+from tools.timer import LapTimer
+
 np.random.seed(3407)
 
 N = 32
 delta = 0.5
 epsilon = 0.1
-beta = 0.01
+beta = 0.25
 
 t_end = 10**7
 dt = 0.1
+dt_save = 100
 
 m1 = 1 - delta / 2
 m2 = 1 + delta / 2
@@ -24,6 +27,8 @@ def calc_H(q, p, m):
     return T + U
 
 def normal_mode(m):
+    # NOTE: 使用论文的简振模的公式计算出的 H 和 sum E 差距过大
+    # 这里暂时使用刚度矩阵通过广义特征值求解
     K = 2*np.eye(N) - np.eye(N, k=1) - np.eye(N, k=-1)
     M = np.diag(m)
     omega_sq, U = eigh(K, b=M)
@@ -60,48 +65,41 @@ def initialize(m, omega, U, epsilon, k=0.1):
     return q0, p0
 
 @nb.njit()
-def SPRK8_step(q, p, m, dt):
+def Yo8_step(q, p, m, dt):
     q = q.copy()
     p = p.copy()
+
     def gradT(p, m):
         return p / m 
 
-    def dV(x):
-        return x + beta * x**3
-
     def gradV(q):
+        dV = lambda x: x + beta * x**3
         q_m1 = np.concatenate((np.zeros(1), q[:-1]))
         q_p1 = np.concatenate((q[1:], np.zeros(1)))
         return dV(q - q_m1) - dV(q_p1 - q)
 
-    # 积分器常数
-    C_COEFFS = np.array([
-        0.195557812560339,
-        0.433890397482848,
-        -0.207886431443621,
-        0.078438221400434,
-        0.078438221400434,
-        -0.207886431443621,
-        0.433890397482848,
-        0.195557812560339,
-    ])
-    
-    D_COEFFS = np.array([
-        0.0977789062801695,
-        0.289196093121589,
-        0.252813583900000,
-        -0.139788583301759,
-        -0.139788583301759,
-        0.252813583900000,
-        0.289196093121589,
-        0.0977789062801695,
-    ])
-
-    for i in range(8):
-        q += D_COEFFS[i] * gradT(p, m) * dt
+    C_COEFFS = np.array([0.521213104349955, 1.431316259203525, 0.988973118915378,
+                         1.298883627145484, 1.216428715985135, -1.227080858951161,
+                         -2.031407782603105, -1.698326184045211, -1.698326184045211,
+                         -2.031407782603105, -1.227080858951161, 1.216428715985135,
+                         1.298883627145484, 0.988973118915378, 1.431316259203525,
+                         0.521213104349955])
+    D_COEFFS = np.array([1.04242620869991, 1.82020630970714, 0.157739928123617,
+                         2.44002732616735, -0.007169894197081, -2.44699182370524,
+                         -1.61582374150097, -1.780828626589452, -1.61582374150097,
+                         -2.44699182370524, -0.007169894197081, 2.44002732616735,
+                         0.157739928123617, 1.82020630970714, 1.04242620869991])
+    for i in range(15):
         p -= C_COEFFS[i] * gradV(q) * dt
+        q += D_COEFFS[i] * gradT(p, m) * dt
+    p -= C_COEFFS[15] * gradV(q) * dt
     return q, p
 
+@nb.njit()
+def calc_chunk(q, p, m, dt, n_steps):
+    for step in range(n_steps):
+        q, p = Yo8_step(q, p, m, dt)
+    return q, p
 
 if __name__ == '__main__':
     m = np.zeros(N)
@@ -123,16 +121,28 @@ if __name__ == '__main__':
 
     q = q0.copy()
     p = p0.copy()
-    for step in range(int(t_end / dt)):
-        q, p = SPRK8_step(q, p, m, dt)
-        if step % int(10**5 / dt) == 0:
-            print(f"step={step}, H={calc_H(q, p, m)}")
+    n_chunks = int(t_end / dt_save)
+    Ekt = np.zeros((n_chunks, N))
+    Ht = np.zeros(n_chunks)
+    Tt = np.arange(n_chunks) * dt_save
 
-    H_t = calc_H(q, p, m)
-    Ek_t = calc_Ek(q, p, m, omega, U)
-    print(f"H_t={H_t}, sum Ek_t={np.sum(Ek_t)}, H_t-sum Ek_t={H_t-np.sum(Ek_t)}")
-    sort_idx = np.argsort(omega)
-    plt.figure(figsize=(10, 6))
-    plt.plot(Ek_t[sort_idx], 'o-')
-    plt.grid(True)
+    n_print = n_chunks // 100
+    timer = LapTimer()
+    timer()
+    for chunk in range(n_chunks):
+        q, p = calc_chunk(q, p, m, dt, int(dt_save / dt))
+        Ht[chunk] = calc_H(q, p, m)
+        Ekt[chunk] = calc_Ek(q, p, m, omega, U)
+        if chunk % n_print == 0:
+            pt = timer()
+            print(f"{chunk}/{n_chunks}: {pt:.2f}s, Delta H={Ht[chunk]-Ht[0]:.8f}")
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(Tt, Ht)
+    plt.show()
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    for i in range(10):
+        ax.plot(Tt, Ekt[:, i], label=f'k={i}')
+    plt.legend()
     plt.show()

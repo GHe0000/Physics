@@ -1,6 +1,6 @@
 import numpy as np
 
-np.set_printoptions(precision=15) # 控制打印精度
+np.set_printoptions(precision=20) # 控制打印精度
 
 # Solution A
 w = np.array([
@@ -14,19 +14,24 @@ w = np.array([
 ])
 
 w0 = 1 - 2*np.sum(w)
-
 m = len(w)
 
-d = [w[m-1-i] for i in range(m)] + [w0]
+d_half = np.array(w[::-1])
+d = np.concatenate((d_half,
+		    np.array([w0]),
+		    d_half[::-1]))
 
-c = (
-    [0.5 * w[m-1]] +
-    [0.5 * (w[m-1-i] + w[m-2-i]) for i in range(1, m)] +
-    [0.5 * (w[0] + w0)]
-)
+
+w_tmp = np.concatenate((np.array([w0]),w))
+w_tmp_p1 = np.concatenate((w_tmp[1:], np.zeros(1)))
+c_half = (w_tmp + w_tmp_p1)/2
+c = np.concatenate((c_half[::-1], c_half))
 
 c_str = np.array2string(np.array(c), separator=',')
 d_str = np.array2string(np.array(d), separator=',')
 
 print(f"C=\n {c_str}")
 print(f"D=\n {d_str}")
+
+print(f"sum c={np.sum(c)}")
+print(f"sum d={np.sum(d)}")
