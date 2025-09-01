@@ -1,6 +1,6 @@
 import numpy as np
 
-np.set_printoptions(precision=20) # 控制打印精度
+np.set_printoptions(precision=15) # 控制打印精度
 
 # Solution A
 w = np.array([
